@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SRC_FILE=$1
+
+DEST_FILE=${SRC_FILE/.md/.html}
+
+markdown $SRC_FILE > $DEST_FILE
+
+rsync $DEST_FILE # enter your own host and directory destination
