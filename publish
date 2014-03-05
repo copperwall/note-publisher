@@ -1,9 +1,32 @@
-#!/bin/bash
+#!/usr/bin/ruby
 
-SRC_FILE=$1
+if ARGV[0].nil?
+   puts "usage: publish [local] filename"
+   exit(-2)
+end
 
-DEST_FILE=${SRC_FILE/.md/.html}
+if ARGV[0] == "remote"
+   if !ARGV[1].nil?
+      src_file = ARGV[1]
+      dest_location = "home:www/public/notes"
+   else
+      puts "usage: publish [local] filename"
+      exit(-2)
+   end
+else
+   src_file = ARGV[0]
+   dest_location = "~/docs/notes/published"
+end
 
-markdown $SRC_FILE > $DEST_FILE
+# Could try to use markdown gem later
 
-rsync $DEST_FILE # enter your own host and directory destination
+# Shell method
+dest_file = src_file.sub(/\.md/, ".html")
+
+`markdown < #{src_file} > #{dest_file}`
+
+# Transfer (Reads from stdin, less cleanup)
+puts `rsync #{dest_file} #{dest_location}`
+
+# Clean up
+`rm #{dest_file}`
